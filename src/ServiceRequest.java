@@ -1,12 +1,14 @@
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 public class ServiceRequest {
-    private String date_opened;
-    private String date_closed;
+    private LocalDate date_opened;
+    private LocalDate date_closed;
     private boolean isClosed;
     private boolean closed_on_time;
     private String reason_for_request;
     private Neighborhood neighborhood;
 
-    public ServiceRequest (String date_opened, String date_closed, boolean isClosed, boolean closed_on_time, String reason_for_request, Neighborhood neighborhood){
+    public ServiceRequest (LocalDate date_opened, LocalDate date_closed, boolean isClosed, boolean closed_on_time, String reason_for_request, Neighborhood neighborhood){
         this.date_opened = date_opened;
         this.date_closed = date_closed;
         this.isClosed = isClosed;
@@ -15,11 +17,11 @@ public class ServiceRequest {
         this.neighborhood = neighborhood;
     }
 
-    public String getDateOpened() {
+    public LocalDate getDateOpened() {
         return this.date_opened;
     }
 
-    public String getDateClosed() {
+    public LocalDate getDateClosed() {
         return this.date_closed;
     }
 
@@ -39,8 +41,8 @@ public class ServiceRequest {
         return neighborhood;
     }
 
-    public int daysOpen(String date_opened, String date_closed) {
-        int days_open;
+    public long daysOpen(LocalDate date_opened, LocalDate date_closed) {
+        long days_open = date_opened.until(date_closed, ChronoUnit.DAYS);
         return days_open;
     }
 }

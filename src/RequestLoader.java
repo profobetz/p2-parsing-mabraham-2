@@ -1,7 +1,9 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOError;
-import java.io.FileReader;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +11,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVFormat.Builder;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-
 public class RequestLoader {
 
     private File SOME_FILE;
@@ -18,7 +19,7 @@ public class RequestLoader {
         this.SOME_FILE = SOME_FILE;
     }
 
-    public List<Neighborhood> load() {
+    public List<Neighborhood> load() throws IOException {
 
     List<Neighborhood> nlist = new ArrayList<>();
     // List<Neighborhood> nlist = null
@@ -31,21 +32,60 @@ public class RequestLoader {
                               .setQuote('"')
                               .build();
 
-    // Use that CSV format to read SOME_FILE, a UTF-8 coded .csv
-    CSVParser parser = CSVParser.parse(SOME_FILE, StandardCharsets.UTF_8, format);
-    
-    // Then later on, you can have the parser parse the file and
-    // read each CSVRecord's columns based on the header names.
-
-    // If the top of the file has a "closed_date" column, 
-    // this will get that column for this "next_row"
-    // Each row is a ServiceRequest. Each column is an attribute
     try {
-        for (CSVRecord next_row: parser.getRecords()) {
-            String this_rows_closed_date = next_row.get("closed_date");
-            String this_rows_open_date = next_row.get("open_date");
-        }
+        // Use that CSV format to read SOME_FILE, a UTF-8 coded .csv
+        CSVParser parser = CSVParser.parse(SOME_FILE, StandardCharsets.UTF_8, format);
+        
+        // Then later on, you can have the parser parse the file and
+        // read each CSVRecord's columns based on the header names.
 
+        // If the top of the file has a "closed_date" column, 
+        // this will get that column for this "next_row"
+        // Each row is a ServiceRequest. Each column is an attribute.
+        boolean closed_on_time = false;
+        boolean isClosed = false;
+        
+        for (CSVRecord next_row: parser.getRecords()) {
+            String this_rows_open_date = next_row.get("open_dt");
+            LocalDate this_rows_open_LocalDate = LocalDate.parse(this_rows_open_date);
+
+            String this_rows_closed_date = next_row.get("closed_dt");
+            LocalDate this_rows_closed_LocalDate = LocalDate.parse(this_rows_closed_date);
+
+            String onTime = next_row.get("on_time");
+            if ( onTime.equals("OVERDUE") ) {
+                closed_on_time = false;
+            } else if (onTime.equals("ONTIME")) {
+                closed_on_time = true;
+            }
+
+            String case_status = next_row.get("case_status");
+            if (case_status.equals("Closed")) {
+                isClosed = true;
+            } else if (case_status.equals("Open")) {
+                isClosed = false;
+            }
+
+            String reason_for_request = next_row.get("reason");
+            String neighborhood_name = next_row.get("neighborhood");
+
+            Neighborhood neighborhood = new Neighborhood(neighborhood_name);
+
+            for (Neighborhood neighbor : nlist) {
+                if (nlist.isEmpty()) {
+                    ServiceRequest request = new ServiceRequest(this_rows_open_LocalDate, this_rows_closed_LocalDate, isClosed, closed_on_time, reason_for_request, neighborhood);
+                    neighborhood.addRequest(request);
+                    nlist.add(neighborhood);
+                } else if (!nlist.contains(neighborhood)) {
+                    ServiceRequest request = new ServiceRequest(this_rows_open_LocalDate, this_rows_closed_LocalDate, isClosed, closed_on_time, reason_for_request, neighborhood);
+                    neighborhood.addRequest(request);
+                    nlist.add(neighborhood);
+                } else if (neighborhood.equals(neighbor)){
+                    ServiceRequest request = new ServiceRequest(this_rows_open_LocalDate, this_rows_closed_LocalDate, isClosed, closed_on_time, reason_for_request, neighbor);
+                    neighbor.addRequest(request);
+                }
+            } 
+        } 
     // 1. Neighborhood. 
     // 2. ServiceRequest
     // 3. Neighborhood.addRequest() to the Neighborhood. Not all neighborhoods are new.
@@ -57,12 +97,12 @@ public class RequestLoader {
     // for converting each field to an appropriate datatype (e.g. LocalDate for dates,
     // booleans for binary values, etc.) Also make sure you handle any exceptions that
     // may occur as a result of the file reading and parsing process using try-catch blocks.
-
-        } catch (FileNotFoundException ex) {
-            System.err.println("File not found.");
-        } catch (IOError ex) {
-            System.err.println("An error occurred.");
-        }
-    return nlist;
+    
+    } catch (IOError ex) {
+        System.err.println("An error occurred.");
+    } catch (FileNotFoundException ex) {
+        System.err.println("File not found.");
     } 
+        return nlist;
+    }
 }
