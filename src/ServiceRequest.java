@@ -1,12 +1,12 @@
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 public class ServiceRequest {
-    private LocalDate date_opened;
-    private LocalDate date_closed;
-    private boolean isClosed;
-    private boolean closed_on_time;
-    private String reason_for_request;
-    private Neighborhood neighborhood;
+    private final LocalDate date_opened;
+    private final LocalDate date_closed;
+    private final boolean isClosed;
+    private final boolean closed_on_time;
+    private final String reason_for_request;
+    private final Neighborhood neighborhood;
 
     public ServiceRequest (LocalDate date_opened, LocalDate date_closed, boolean isClosed, boolean closed_on_time, String reason_for_request, Neighborhood neighborhood){
         this.date_opened = date_opened;

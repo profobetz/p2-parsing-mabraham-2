@@ -1,11 +1,10 @@
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        String filepath = "resources/311_requests.csv";
+        String filepath = "resources/sample.csv";
 
         RequestLoader loader = new RequestLoader(new File(filepath));
 

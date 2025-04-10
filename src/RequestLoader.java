@@ -4,6 +4,8 @@ import java.io.IOError;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,9 +20,8 @@ public class RequestLoader {
     public RequestLoader(File SOME_FILE) {
         this.SOME_FILE = SOME_FILE;
     }
-
+    
     public List<Neighborhood> load() throws IOException {
-
     List<Neighborhood> nlist = new ArrayList<>();
     // List<Neighborhood> nlist = null
 
@@ -31,7 +32,6 @@ public class RequestLoader {
                               .setDelimiter(',')
                               .setQuote('"')
                               .build();
-
     try {
         // Use that CSV format to read SOME_FILE, a UTF-8 coded .csv
         CSVParser parser = CSVParser.parse(SOME_FILE, StandardCharsets.UTF_8, format);
@@ -44,13 +44,21 @@ public class RequestLoader {
         // Each row is a ServiceRequest. Each column is an attribute.
         boolean closed_on_time = false;
         boolean isClosed = false;
+        LocalDate today = LocalDate.now();
         
         for (CSVRecord next_row: parser.getRecords()) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
             String this_rows_open_date = next_row.get("open_dt");
-            LocalDate this_rows_open_LocalDate = LocalDate.parse(this_rows_open_date);
+            LocalDate this_rows_open_LocalDate = LocalDate.parse(this_rows_open_date, formatter);
 
             String this_rows_closed_date = next_row.get("closed_dt");
-            LocalDate this_rows_closed_LocalDate = LocalDate.parse(this_rows_closed_date);
+            LocalDate this_rows_closed_LocalDate;
+            if ("".equals(this_rows_closed_date)) {
+                this_rows_closed_LocalDate = today;
+            } else {
+                this_rows_closed_LocalDate = LocalDate.parse(this_rows_closed_date, formatter);
+            }
 
             String onTime = next_row.get("on_time");
             if ( onTime.equals("OVERDUE") ) {
@@ -68,26 +76,44 @@ public class RequestLoader {
 
             String reason_for_request = next_row.get("reason");
             String neighborhood_name = next_row.get("neighborhood");
-
+            
             Neighborhood neighborhood = new Neighborhood(neighborhood_name);
+            ServiceRequest request = new ServiceRequest(this_rows_open_LocalDate, this_rows_closed_LocalDate, isClosed, closed_on_time, reason_for_request, neighborhood);
 
-            for (Neighborhood neighbor : nlist) {
-                if (nlist.isEmpty()) {
-                    ServiceRequest request = new ServiceRequest(this_rows_open_LocalDate, this_rows_closed_LocalDate, isClosed, closed_on_time, reason_for_request, neighborhood);
-                    neighborhood.addRequest(request);
-                    nlist.add(neighborhood);
-                } else if (!nlist.contains(neighborhood)) {
-                    ServiceRequest request = new ServiceRequest(this_rows_open_LocalDate, this_rows_closed_LocalDate, isClosed, closed_on_time, reason_for_request, neighborhood);
-                    neighborhood.addRequest(request);
-                    nlist.add(neighborhood);
-                } else if (neighborhood.equals(neighbor)){
-                    ServiceRequest request = new ServiceRequest(this_rows_open_LocalDate, this_rows_closed_LocalDate, isClosed, closed_on_time, reason_for_request, neighbor);
-                    neighbor.addRequest(request);
+            if (nlist.isEmpty()) {
+                nlist.add(neighborhood);
+                neighborhood.addRequest(request);
+            } else {
+                for (Neighborhood neighbor : nlist) {
+                    if (neighbor.getName().equals(neighborhood.getName()) || nlist.contains(neighborhood) || neighbor.equals(neighborhood)) {
+                        neighbor.addRequest(request);
+                     } else if (!neighbor.getName().equals(neighborhood.getName()) || !nlist.contains(neighborhood) || !neighbor.equals(neighborhood)) {
+                        nlist.add(neighborhood);
+                        neighborhood.addRequest(request);
+                     } 
+                     
+                    //else if (!neighbor.getName().equals(neighborhood.getName()) || !nlist.contains(neighborhood) || !neighbor.equals(neighborhood)){
+                    //     neighborhood.addRequest(request);
+                    //     nlist.add(neighborhood);
+                    //     break;
+                    // } 
                 }
-            } 
-        } 
+            }
+            // for (int i = 0; i < nlist.size(); i++){
+            //     if (!neighborhood_name.equals(nlist.get(i).getName())){
+            //         nlist.add(neighborhood);
+            //         neighborhood.addRequest(request);
+            //     }
+            // }
+            // if (!neighborhood.getServiceRequestList().contains(request)) {
+            //     neighborhood.addRequest(request);
+            // } else {
+            //     ServiceRequest request = new ServiceRequest(this_rows_open_LocalDate, this_rows_closed_LocalDate, isClosed, closed_on_time, reason_for_request, neighborhood);
+            //     neighborhood.addRequest(request);
+            // }
+        }
     // 1. Neighborhood. 
-    // 2. ServiceRequest
+    // 2. ServiceRequest.
     // 3. Neighborhood.addRequest() to the Neighborhood. Not all neighborhoods are new.
     // 4. Add new neighborhood to neighborhood list after the loop.
     // 5. Check to see if object already exists before adding it to the list.
@@ -97,12 +123,14 @@ public class RequestLoader {
     // for converting each field to an appropriate datatype (e.g. LocalDate for dates,
     // booleans for binary values, etc.) Also make sure you handle any exceptions that
     // may occur as a result of the file reading and parsing process using try-catch blocks.
-    
+
     } catch (IOError ex) {
         System.err.println("An error occurred.");
     } catch (FileNotFoundException ex) {
         System.err.println("File not found.");
+    } catch (DateTimeParseException p) {
+        System.err.println(p.getMessage());
     } 
-        return nlist;
+        return nlist; 
     }
 }
