@@ -85,24 +85,27 @@ public class RequestLoader {
                 neighborhood.addRequest(request);
             } else {
                 for (Neighborhood neighbor : nlist) {
-                    if (neighbor.getName().equals(neighborhood.getName()) || nlist.contains(neighborhood) || neighbor.equals(neighborhood)) {
+                    if (neighbor.getName().equals(neighborhood.getName()) || 
+                    nlist.contains(neighborhood) || neighbor.equals(neighborhood)) {
                         neighbor.addRequest(request);
                         break;
-                     } else if (!neighbor.getName().equals(neighborhood.getName()) || !nlist.contains(neighborhood) || !neighbor.equals(neighborhood)) {
+                     } else {
+                        if (!neighbor.getServiceRequestList().contains(request)) {
+                            neighborhood.addRequest(request);
+                        }
                         nlist.add(neighborhood);
-                        neighborhood.addRequest(request);
                         break;
-                     } 
-                     
-                    //else if (!neighbor.getName().equals(neighborhood.getName()) || !nlist.contains(neighborhood) || !neighbor.equals(neighborhood)){
-                    //     neighborhood.addRequest(request);
-                    //     nlist.add(neighborhood);
-                    //     break;
-                    // } 
+                    } 
                 }
             }
+            // if (!neighborhood.getServiceRequestList().contains(request)) {
+            //         neighborhood.addRequest(request);
+            //     } else {
+            //         ServiceRequest request1 = new ServiceRequest(this_rows_open_LocalDate, this_rows_closed_LocalDate, isClosed, closed_on_time, reason_for_request, neighborhood);
+            //         neighborhood.addRequest(request1);
+            //     }
             // for (int i = 0; i < nlist.size(); i++){
-            //     if (!neighborhood_name.equals(nlist.get(i).getName())){
+            //     if (!neighborhood_name.equals(nlist.get(i).getName())) {
             //         nlist.add(neighborhood);
             //         neighborhood.addRequest(request);
             //     }
