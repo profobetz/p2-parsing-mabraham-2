@@ -87,9 +87,11 @@ public class RequestLoader {
                 for (Neighborhood neighbor : nlist) {
                     if (neighbor.getName().equals(neighborhood.getName()) || nlist.contains(neighborhood) || neighbor.equals(neighborhood)) {
                         neighbor.addRequest(request);
+                        break;
                      } else if (!neighbor.getName().equals(neighborhood.getName()) || !nlist.contains(neighborhood) || !neighbor.equals(neighborhood)) {
                         nlist.add(neighborhood);
                         neighborhood.addRequest(request);
+                        break;
                      } 
                      
                     //else if (!neighbor.getName().equals(neighborhood.getName()) || !nlist.contains(neighborhood) || !neighbor.equals(neighborhood)){
