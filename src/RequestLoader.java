@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.csv.CSVFormat;
@@ -15,6 +16,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 public class RequestLoader {
 
+    HashMap<String, Neighborhood> neighborhood_lookup = new HashMap<>();
     private File SOME_FILE;
 
     public RequestLoader(File SOME_FILE) {
@@ -54,11 +56,16 @@ public class RequestLoader {
 
             String this_rows_closed_date = next_row.get("closed_dt");
             LocalDate this_rows_closed_LocalDate;
-            if ("".equals(this_rows_closed_date)) {
+            if (this_rows_closed_date.trim().equals("")) {
                 this_rows_closed_LocalDate = today;
             } else {
                 this_rows_closed_LocalDate = LocalDate.parse(this_rows_closed_date, formatter);
             }
+
+            // LocalDate this_rows_closed_LocalDate = null;
+            // if (!next_row.get("closed_dt").trim().equals("")) {
+            //     this_rows_closed_LocalDate = LocalDate.parse(next_row.get("closed_dt").split(" ")[0]);
+            // }
 
             String onTime = next_row.get("on_time");
             if ( onTime.equals("OVERDUE") ) {
@@ -77,7 +84,12 @@ public class RequestLoader {
             String reason_for_request = next_row.get("reason");
             String neighborhood_name = next_row.get("neighborhood");
             
+            // Neighborhood target = null;
             Neighborhood neighborhood = null;
+
+            // neighborhood = neighborhood_lookup.getOrDefault(neighborhood_name, new Neighborhood(neighborhood_name));
+            // neighborhood_lookup.putIfAbsent(neighborhood_name, neighborhood);
+
             for (Neighborhood next_neighbor : nlist) {
                 if (next_neighbor.getName().equals(neighborhood_name)){
                     neighborhood = next_neighbor;
@@ -89,6 +101,15 @@ public class RequestLoader {
             }
             neighborhood.addRequest(new ServiceRequest(this_rows_open_LocalDate, this_rows_closed_LocalDate, isClosed, closed_on_time, reason_for_request, neighborhood));
         }
+
+            // ServiceRequest request = new ServiceRequest(
+            //     LocalDate.parse(next_row.get("open_dt")),
+            //     closed_date,
+            //     next_row.get("on_time").equals("ONTIME"),
+            //     next_row.get("case_status").equals("Closed"),
+            //     next_row.get("reason"),
+            //     target <--(neighborhood)
+            
     // 1. Neighborhood. 
     // 2. ServiceRequest.
     // 3. Neighborhood.addRequest() to the Neighborhood. Not all neighborhoods are new.
@@ -109,5 +130,6 @@ public class RequestLoader {
         System.err.println(p.getMessage());
     } 
         return nlist; 
+        //return neighborhood_lookup.values();
     }
 }
