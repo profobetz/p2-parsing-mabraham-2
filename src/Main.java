@@ -1,29 +1,26 @@
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
+
         String filepath = "resources/sample.csv";
-        try {
-            RequestLoader loader = new RequestLoader(new File(filepath));
+        
+        RequestLoader loader = new RequestLoader(new File(filepath));
 
-            List<Neighborhood> neighborhoods = loader.load();
+        List<Neighborhood> neighborhoods = loader.load();
 
-            for ( Neighborhood n : neighborhoods ) {
-                String summary = String.format("%s - %d open / %d total, %d overdue (%.2f%%), %.2f avg. days to closure", 
-                        n.getName(),
-                        n.getOpenCases().size(),
-                        n.getTotalRequestCount(),
-                        n.getOverdueCases().size(),
-                        n.getOverdueRate(),
-                        n.getAverageDaysOpen()
-                );
-                System.out.println(summary);
-            }
-        } catch (FileNotFoundException ex){
-            System.out.print(ex.getMessage());
+        System.out.println("Neighborhoods: ");
+        for ( Neighborhood n : neighborhoods ) {
+            String summary = String.format("%s - %d open / %d total, %d overdue (%.2f%%), %.2f avg. days to closure", 
+                    n.getName(),
+                    n.getOpenCases().size(),
+                    n.getTotalRequestCount(),
+                    n.getOverdueCases().size(),
+                    n.getOverdueRate(),
+                    n.getAverageDaysOpen()
+            );
+            System.out.println(summary);
         }
-    }
+    } 
 }

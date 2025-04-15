@@ -2,7 +2,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Neighborhood {
-    private final String name;
+
+    private String name;
     private ArrayList<ServiceRequest> ServiceRequestList;
 
     public Neighborhood(String name) {
@@ -24,6 +25,7 @@ public class Neighborhood {
 
     public double getAverageDaysOpen() {
         long total_days = 0;
+        
         for (ServiceRequest request: this.ServiceRequestList) {
             total_days += request.daysOpen();
         }
@@ -32,7 +34,8 @@ public class Neighborhood {
     }  
 
     public List<ServiceRequest> getOpenCases() {
-        ArrayList <ServiceRequest> open_cases = new ArrayList<>();
+        List<ServiceRequest> open_cases = new ArrayList<>();
+
         for (ServiceRequest request: this.ServiceRequestList) {
             if (!request.isClosed()) {
                 open_cases.add(request);
@@ -42,7 +45,8 @@ public class Neighborhood {
     }
 
     public List<ServiceRequest> getOverdueCases() {
-        ArrayList <ServiceRequest> overdue_cases = new ArrayList<>();
+        List <ServiceRequest> overdue_cases = new ArrayList<>();
+
         for (ServiceRequest request: this.ServiceRequestList) {
             if (!request.is_closed_on_time()) {
                 overdue_cases.add(request);
@@ -61,11 +65,10 @@ public class Neighborhood {
         // double overdue_rate = overdue_cases/ServiceRequestList.size();
         // return overdue_rate;
 
-        return this.getOverdueCases().size() / (double) this.getTotalRequestCount();
+        return this.getOverdueCases().size() / (double) this.getTotalRequestCount() * 100;
     }
 
     public int getTotalRequestCount() {
-        int requestCount = this.ServiceRequestList.size();
-        return requestCount;
+        return this.ServiceRequestList.size();
     }
 }
