@@ -4,7 +4,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String filepath = "resources/sample.csv";
+        String filepath = "resources/311_requests.csv";
         
         RequestLoader loader = new RequestLoader(new File(filepath));
 
