@@ -5,10 +5,11 @@ public class Neighborhood {
 
     private String name;
     private ArrayList<ServiceRequest> ServiceRequestList;
+    private double per_capita_income;
 
     public Neighborhood(String name) {
         this.name = name;
-        this.ServiceRequestList = new ArrayList<>();   
+        this.ServiceRequestList = new ArrayList<>();
     }
     
     public String getName() {
@@ -25,7 +26,7 @@ public class Neighborhood {
 
     public double getAverageDaysOpen() {
         long total_days = 0;
-        
+
         for (ServiceRequest request: this.ServiceRequestList) {
             total_days += request.daysOpen();
         }
@@ -62,7 +63,7 @@ public class Neighborhood {
         //         overdue_cases++;
         //     }
         // }
-        // double overdue_rate = overdue_cases/ServiceRequestList.size();
+        // double overdue_rate = overdue_cases/this.ServiceRequestList.size() * 100;
         // return overdue_rate;
 
         return this.getOverdueCases().size() / (double) this.getTotalRequestCount() * 100;
@@ -70,5 +71,13 @@ public class Neighborhood {
 
     public int getTotalRequestCount() {
         return this.ServiceRequestList.size();
+    }
+
+    public void setPerCapitaIncome(double per_capita_income) {
+        this.per_capita_income = per_capita_income;
+    }
+
+    public double getPerCapitaIncome() {
+        return this.per_capita_income;
     }
 }

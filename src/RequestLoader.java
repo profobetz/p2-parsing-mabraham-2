@@ -15,7 +15,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 public class RequestLoader {
 
-    private File SOME_FILE;
+    private final File SOME_FILE;
 
     public RequestLoader(File SOME_FILE) {
         this.SOME_FILE = SOME_FILE;
