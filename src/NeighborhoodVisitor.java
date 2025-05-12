@@ -16,9 +16,9 @@ public class NeighborhoodVisitor {
     }
 
     public List<Results> gather_results (List<Neighborhood> nlist) {
+        String [] neighborhood_name_array = new String [nlist.size()];
         double [] overdue_rate_array = new double [nlist.size()];
         double [] per_capita_income_array = new double [nlist.size()];
-        String [] neighborhood_name_array = new String[nlist.size()];
         //scatterplot and trend line
 
         for (int i = 0; i < nlist.size(); i++) {
@@ -41,7 +41,7 @@ public class NeighborhoodVisitor {
 
         for (int i = 0; i < nlist.size(); i++) {
             overdue_rate_array[i] = nlist.get(i).getOverdueRate();
-            per_capita_income_array[i] = nlist.get(i).getPerCapitaIncome();
+            per_capita_income_array[i] = nlist.get(i).getPerCapitaIncome(); 
         }
         double correlation_of_total_set =  new PearsonsCorrelation().correlation(per_capita_income_array, overdue_rate_array);
         return correlation_of_total_set;

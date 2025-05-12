@@ -10,15 +10,15 @@
 // object for each income bracket, with simple String and double attributes representing things like the upper and lower bounds 
 // of that bracket and the summaries you computed inside that range.)
 
-// The question I intend to explore for this project is how the per capita income of each
-// neighborhood correlates to the overdue rate of 311 requests.
-// Trace which neighborhood is which. Don't need correlation. 
-
+// The question I intend to explore for this project is how the per capita
+// income of each neighborhood correlates to the overdue rate of 311 requests.
+// Trace which neighborhood is which. Don't need correlation.
 public class Results {
 
     private String neighborhood_name;
     private double per_capita_income;
     private double overdue_rate;
+    private double correlation;
 
     public Results (String neighborhood_name, double overdue_rate, double per_capita_income) {
         this.neighborhood_name = neighborhood_name;
@@ -36,5 +36,13 @@ public class Results {
 
     public String getNeighborhoodName() {
         return this.neighborhood_name;
+    }
+
+    public void setCorrelation(double correlation) {
+        this.correlation = correlation;
+    }
+
+    public double getCorrelation() {
+        return this.correlation;
     }
 }

@@ -39,8 +39,6 @@ public class IncomeLoader {
                         neighborhood = next_neighbor;
                         if (per_capita_income > 0.00) {
                             neighborhood.setPerCapitaIncome(per_capita_income); 
-                        } else {
-                            per_capita_income = null;
                         }
                     }
                 }
